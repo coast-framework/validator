@@ -1,0 +1,18 @@
+{:paths ["src"]
+
+ :deps {coast-framework/error {:git/url "https://github.com/coast-framework/error"
+                               :sha "0bd05b335114d67fef7a9285dfaa882b92bed722"}
+        coast-framework/helper {:git/url "https://github.com/coast-framework/helper"
+                                :sha "04109855b5d7a7725c84a55eee4c18b6f9281cfa"}
+        jkkramer/verily {:git/url "https://github.com/coast-framework/verily"
+                         :sha "c7305beecf47dc794a9ba9fd7876b00816c9d37f"}}
+
+ :aliases {:repl
+           {:jvm-opts ["-Dclojure.server.repl={:port,5555,:accept,clojure.core.server/repl}"]}
+
+           :test
+           {:extra-paths ["test"]
+            :main-opts ["-m" "cognitect.test-runner"]
+            :extra-deps {com.cognitect/test-runner
+                         {:git/url "https://github.com/cognitect-labs/test-runner.git"
+                          :sha "5f2b5c2efb444df76fb5252102b33f542ebf7f58"}}}}}
