@@ -6,8 +6,8 @@ Easy clojure form validations
 Make your `deps.edn` look like this:
 
 ```clojure
-{:deps {coast-framework/helper {:git/url "https://github.com/coast-framework/validator"
-                                :sha "7d12ddafa6fa7a48460ee160029c79f2e77e2640"}}}
+{:deps {coast-framework/validator {:git/url "https://github.com/coast-framework/validator"
+                                   :sha "7d12ddafa6fa7a48460ee160029c79f2e77e2640"}}}
 ```
 
 ## Usage
