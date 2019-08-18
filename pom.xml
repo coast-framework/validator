@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>coast-framework</groupId>
   <artifactId>validator</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <name>validator</name>
 
   <dependencies>
@@ -21,6 +21,11 @@
       <groupId>coast-framework</groupId>
       <artifactId>helper</artifactId>
       <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>coast-framework</groupId>
+      <artifactId>verily</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
