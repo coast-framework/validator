@@ -2,8 +2,7 @@
 
  :deps {coast-framework/error {:mvn/version "1.0.2"}
         coast-framework/helper {:mvn/version "1.0.0"}
-        jkkramer/verily {:git/url "https://github.com/coast-framework/verily"
-                         :sha "c7305beecf47dc794a9ba9fd7876b00816c9d37f"}}
+        coast-framework/verily {:mvn/version "0.1.0-SNAPSHOT"}}
 
  :aliases {:repl
            {:jvm-opts ["-Dclojure.server.repl={:port,5555,:accept,clojure.core.server/repl}"]}
