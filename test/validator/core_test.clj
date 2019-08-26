@@ -20,12 +20,25 @@
              (error/rescue
               (params {})))))
 
-    (testing "with an invalid map"
-      (let [account {:account {:email "" :password "pw"}}]
+    (testing "with an invalid nested map"
+      (let [request {:params {:account {:email "" :password "pw"}}}]
         (is (= [nil {:account {:email "Email must not be blank"}}]
                (error/rescue
-                (params account))))))
+                (params request))))))
 
     (testing "with a valid map"
-      (let [account {:account {:email "f@f.com" :password "pw"}}]
-        (is (= account (params account)))))))
+      (let [account {:account {:email "f@f.com" :password "pw"}}
+            request {:params account}]
+        (is (= account (params request)))))
+
+    (testing "valid qualified keyword map"
+      (let [account #:account{:email "f@f.com" :password "pw"}
+            request {:params account}]
+        (is (= account (params request)))))
+
+    (testing "invalid qualified keyword map"
+      (let [account #:account{:email "" :password "pw"}
+            request {:params account}]
+        (is (= [nil #:account{:email "Email must not be blank"}]
+               (error/rescue
+                (params request))))))))

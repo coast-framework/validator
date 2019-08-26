@@ -5,6 +5,10 @@
             [clojure.string :as string]))
 
 
+(defn qualified-map? [m]
+  (qualified-ident? (ffirst m)))
+
+
 (defn nest [k v]
   (let [[table column] (->> (string/split (name k) #"\.")
                             (map keyword))]
@@ -13,7 +17,9 @@
 
 (defn fmt-validation [result]
   (let [{:keys [keys msg]} result]
-    (mapv #(nest % (str (->> % name (re-find #"\.(\w+)") last helper/humanize) " " msg)) keys)))
+    (if (every? qualified-ident? keys)
+      (mapv #(hash-map % (format "%s %s" (-> % name helper/humanize) msg)) keys)
+      (mapv #(nest % (str (->> % name (re-find #"\.(\w+)") last helper/humanize) " " msg)) keys))))
 
 
 (defn fmt-validations [results]
@@ -32,19 +38,34 @@
 
 
 (defn nested-keyword [table field]
-  (if (keyword? field)
-    (keyword (str (name table) "." (name field)))
-    field))
+  (keyword (format "%s.%s" (name table) (name field))))
 
 
-(defn param [table validation]
-  (let [[type fields msg] validation]
+(defn validation [table rule field-fn]
+  (let [[type fields msg] rule]
     (if (keyword? (first fields))
-      [type (mapv #(nested-keyword table %) fields) msg]
+      [type (mapv #(field-fn (name table) (name %)) fields) msg]
       (vec
-       (concat [type] (mapv #(nested-keyword table %) fields) [msg])))))
+        (concat [type] (mapv #(field-fn table %) fields) [msg])))))
+
+
+(defn required-keys [validations]
+  (->> (filter #(contains? #{:required :not-blank :contains} (first %)) validations)
+       (mapcat second)
+       (distinct)))
 
 
 (defn params [table & validations]
-  (fn [params-map]
-    (validate params-map (mapv #(param table %) validations))))
+  (fn [{:keys [params]}]
+    (let [required-keys (required-keys validations)
+          qualified-map? (qualified-map? params)
+          field-fn (if qualified-map?
+                     keyword
+                     nested-keyword)
+          validations (mapv #(validation table % field-fn) validations)
+          validated-params (validate params validations)]
+      (if qualified-map?
+        (->> (map #(keyword (name table) (name %)) required-keys)
+             (select-keys validated-params))
+        {table (-> (get validated-params table)
+                   (select-keys required-keys))}))))
