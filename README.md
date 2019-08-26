@@ -6,7 +6,7 @@ Easy clojure form validations
 Make your `deps.edn` look like this:
 
 ```clojure
-coast-framework/validator {:mvn/version "1.0.0"}
+coast-framework/validator {:mvn/version "2.0.0"}
 ```
 
 ## Usage
@@ -26,40 +26,42 @@ First, define the table and columns to be validated
     [:required [:email :password]]))
 ```
 
-Then validate a map
+Then validate a ring request map
 
 ```clojure
-(let [account {:account {:email "f@f.com" :password "correct battery horse staple"}}]
+(let [account {:params {:account {:email "f@f.com" :password "correct battery horse staple"}}}]
   (params account))
 
 ; returns
 {:account {:email "f@f.com" :password "correct battery horse staple"}}
 ```
 
-There's also the lower level `validate` function if you don't like forms with nested params
+Qualified keyword maps work too!
 
 ```clojure
-(validate {:a 1 :b 2}
-  [[:required [:a :b]
-   [:positive [:a :b]]]])
+(params {:params {:account/email "f@f.com"}})
 
-; returns the same map {:a 1 :b 2}
+; => returns {:account/email "f@f.com"}
 ```
 
 When there's a validation error, an exception is thrown
 
 ```clojure
-(validate {} [[:required [:email]]])
+(params {:params {:account/email ""}})
 
-; => clojure.lang.ExceptionInfo {:ex-data :error.core/e "Email must not be blank"}
+; => clojure.lang.ExceptionInfo {:ex-data :error.core/e {:email "Email must not be blank"}}
 ```
 
 Custom messages are supported
 
 ```clojure
-(validate {} [[:required [:email] "is required"]])
+(def params
+  (validator/params :account
+    [:required [:email :password] "is required"]))
 
-; => clojure.lang.ExceptionInfo {:ex-data :error.core/e "Email is required"}
+(params {:params {}})
+
+; => clojure.lang.ExceptionInfo {:ex-data :error.core/e {:email "Email is required" :password "Password is required"}}
 ```
 
 ### Built in validators
