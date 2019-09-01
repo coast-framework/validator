@@ -41,4 +41,14 @@
             request {:params account}]
         (is (= [nil #:account{:email "Email must not be blank"}]
                (error/rescue
+                (params request))))))
+
+    (testing "does not throw when using :min-length"
+      (let [account #:account{:email "f@f.com" :password "password123456"}
+            request {:params account}
+            params (validator/params :account
+                     [:required [:email :password]]
+                     [:min-length 10 :password])]
+        (is (= [account nil]
+               (error/rescue
                 (params request))))))))

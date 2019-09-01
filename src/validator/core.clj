@@ -41,12 +41,22 @@
   (keyword (format "%s.%s" (name table) (name field))))
 
 
+(defn validator-key? [keyword-k]
+  (and (keyword? keyword-k)
+    (some? (v/validations-map keyword-k))))
+
+
+(defn format-rule-fields [table field-fn val]
+  (cond
+    (validator-key? val) val
+    (and (sequential? val)
+      (every? keyword? val)) (mapv #(field-fn (name table) (name %)) val)
+    (keyword? val) (field-fn (name table) (name val))
+    :else val))
+
+
 (defn validation [table rule field-fn]
-  (let [[type fields msg] rule]
-    (if (keyword? (first fields))
-      [type (mapv #(field-fn (name table) (name %)) fields) msg]
-      (vec
-        (concat [type] (mapv #(field-fn table %) fields) [msg])))))
+  (mapv #(format-rule-fields table field-fn %) rule))
 
 
 (defn required-keys [validations]
