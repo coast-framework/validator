@@ -6,7 +6,7 @@ Easy clojure form validations
 Make your `deps.edn` look like this:
 
 ```clojure
-coast-framework/validator {:mvn/version "2.0.0"}
+coast-framework/validator {:mvn/version "2.0.1"}
 ```
 
 ## Usage
